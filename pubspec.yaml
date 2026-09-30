@@ -1,0 +1,30 @@
+name: toman_rates
+description: Iranian free-market Toman exchange rate viewer.
+publish_to: none
+version: 1.0.0+1000000
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_riverpod: ^2.6.1
+  dio: ^5.7.0
+  shared_preferences: ^2.3.3
+  connectivity_plus: ^6.1.0
+  intl: ^0.20.2
+  package_info_plus: ^8.1.1
+  url_launcher: ^6.3.1
+  window_manager: ^0.4.3
+  tray_manager: ^0.3.1
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  mocktail: ^1.0.4
+flutter:
+  uses-material-design: true
