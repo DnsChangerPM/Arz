@@ -1,4 +1,13 @@
-enum AppErrorKind { offline, timeout, unauthorized, rateLimited, server, invalidData, unknown }
+enum AppErrorKind {
+  offline,
+  timeout,
+  unauthorized,
+  rateLimited,
+  server,
+  invalidData,
+  unknown,
+}
+
 class AppException implements Exception {
   const AppException(this.kind, this.message, {this.retryAfter});
   final AppErrorKind kind;
@@ -13,5 +22,6 @@ class AppException implements Exception {
     AppErrorKind.unauthorized => 'دسترسی به سرویس امکان‌پذیر نیست.',
     _ => 'خطایی رخ داد. دوباره تلاش کنید.',
   };
-  @override String toString() => 'AppException($kind, $message)';
+  @override
+  String toString() => 'AppException($kind, $message)';
 }

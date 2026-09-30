@@ -1,4 +1,33 @@
-import '../../../core/config/app_config.dart'; import '../../../core/network/http_client.dart'; import '../../../core/storage/json_store.dart'; import '../domain/version_models.dart';
-class VersionRepositoryImpl implements VersionRepository { VersionRepositoryImpl(this._http,this._store); final HttpClient _http; final JsonStore _store; static const _key='version_config_v1';
- @override Future<VersionConfig?> check() async { try { final raw=await _http.getJson(AppConfig.versionUrl,attempts:2); if(raw is! Map)throw const FormatException('root'); final json=Map<String,dynamic>.from(raw); if ((json['telegram_url']?.toString() ?? '').isEmpty) json['telegram_url']=AppConfig.fallbackTelegramUrl; final config=VersionConfig.fromJson(json); await _store.write(_key,config.toJson()); return config; } catch(_) { final cache=_store.read(_key); if(cache==null)return null; try{return VersionConfig.fromJson(cache);}catch(_){return null;} } }
+import '../../../core/config/app_config.dart';
+import '../../../core/network/http_client.dart';
+import '../../../core/storage/json_store.dart';
+import '../domain/version_models.dart';
+
+class VersionRepositoryImpl implements VersionRepository {
+  VersionRepositoryImpl(this._http, this._store);
+  final HttpClient _http;
+  final JsonStore _store;
+  static const _key = 'version_config_v1';
+  @override
+  Future<VersionConfig?> check() async {
+    try {
+      final raw = await _http.getJson(AppConfig.versionUrl, attempts: 2);
+      if (raw is! Map) throw const FormatException('root');
+      final json = Map<String, dynamic>.from(raw);
+      if ((json['telegram_url']?.toString() ?? '').isEmpty) {
+        json['telegram_url'] = AppConfig.fallbackTelegramUrl;
+      }
+      final config = VersionConfig.fromJson(json);
+      await _store.write(_key, config.toJson());
+      return config;
+    } catch (_) {
+      final cache = _store.read(_key);
+      if (cache == null) return null;
+      try {
+        return VersionConfig.fromJson(cache);
+      } catch (_) {
+        return null;
+      }
+    }
+  }
 }
