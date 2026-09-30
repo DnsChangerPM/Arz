@@ -48,7 +48,7 @@ The selected current Flutter toolchain supports Windows 10/11 x64, not Windows 7
 
 ## Forced update
 
-`VersionRepository` loads a validated HTTPS JSON policy and falls back to the last valid cache. Versions use numeric semantic comparison. HTTPS download URL is required; Telegram is optional until deployment supplies the real channel. Malformed or first-run unavailable policy does not lock users out. When installed version is below minimum, the app root becomes a `PopScope(canPop: false)` full-screen update view. It offers an external URL and clipboard fallback and does not instantiate normal navigation.
+`VersionRepository` loads a validated HTTPS JSON policy and falls back to the last valid cache. Versions use numeric semantic comparison. HTTPS download URL is required. The official Telegram update channel is `https://t.me/WidgetArz`; a valid remote policy can override it. Malformed or first-run unavailable policy does not lock users out. When installed version is below minimum, the app root becomes a `PopScope(canPop: false)` full-screen update view. It offers an external URL and clipboard fallback and does not instantiate normal navigation.
 
 ## Configuration and security
 

@@ -60,11 +60,11 @@ Override configuration without source changes:
 flutter run --dart-define=RATES_URL=https://... \
   --dart-define=CROSS_RATES_URL=https://... \
   --dart-define=VERSION_URL=https://... \
-  --dart-define=TELEGRAM_URL=https://t.me/your_real_channel \
+  --dart-define=TELEGRAM_URL=https://t.me/WidgetArz \
   --dart-define=REFRESH_MINUTES=15
 ```
 
-There is intentionally no invented Telegram channel. Set it in the remotely hosted version JSON when known. `config/version.json` is a deployable template; host it at the configured `VERSION_URL` (the default points to this repository's main branch).
+The official update channel is [@WidgetArz](https://t.me/WidgetArz). It is configured in `config/version.json` and as the application fallback. Host the version file at the configured `VERSION_URL` (the default points to this repository's main branch).
 
 ## Forced update format
 
@@ -73,7 +73,7 @@ There is intentionally no invented Telegram channel. Set it in the remotely host
   "current_version": "1.2.0",
   "minimum_supported_version": "1.1.0",
   "download_url": "https://github.com/owner/repository/releases/latest",
-  "telegram_url": "https://t.me/real_channel",
+  "telegram_url": "https://t.me/WidgetArz",
   "release_notes": "..."
 }
 ```
@@ -96,4 +96,3 @@ Android local release signing uses untracked `android/key.properties`. CI requir
 - WorkManager and Windows Task Scheduler are best effort; sleeping/offline devices cannot guarantee exactly 09:00.
 - Windows 7 is outside current Flutter support.
 - A Windows Authenticode certificate was not supplied, so CI cannot sign the EXE. Configure certificate-backed signing before public release.
-- No Telegram URL is invented; deployment must configure the real channel.
