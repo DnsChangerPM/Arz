@@ -1,2 +1,22 @@
-import 'package:flutter_test/flutter_test.dart';import 'package:toman_rates/features/exchange_rates/domain/models.dart';
-void main(){test('snapshot cache round trip',(){final s=RateSnapshot(rates:const [CurrencyRate(code:'USD',toman:100,isDerived:false)],fetchedAt:DateTime.utc(2026),sourceDate:DateTime.utc(2026),provider:'x',rateType:'market');final restored=RateSnapshot.fromJson(s.toJson());expect(restored.rates.single.toman,100);expect(restored.isCached,isTrue);});test('IRR to toman documented conversion',(){const irr=524000;const toman=irr/10;expect(toman,52400);});}
+import 'package:flutter_test/flutter_test.dart';
+import 'package:toman_rates/features/exchange_rates/domain/models.dart';
+
+void main() {
+  test('snapshot cache round trip', () {
+    final s = RateSnapshot(
+      rates: const [CurrencyRate(code: 'USD', toman: 100, isDerived: false)],
+      fetchedAt: DateTime.utc(2026),
+      sourceDate: DateTime.utc(2026),
+      provider: 'x',
+      rateType: 'market',
+    );
+    final restored = RateSnapshot.fromJson(s.toJson());
+    expect(restored.rates.single.toman, 100);
+    expect(restored.isCached, isTrue);
+  });
+  test('IRR to toman documented conversion', () {
+    const irr = 524000;
+    const toman = irr / 10;
+    expect(toman, 52400);
+  });
+}
