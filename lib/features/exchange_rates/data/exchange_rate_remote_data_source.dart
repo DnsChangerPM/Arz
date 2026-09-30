@@ -74,20 +74,83 @@ class TomanifyRemoteDataSource implements ExchangeRateRemoteDataSource {
   }
 
   Future<dynamic> _fetchFeed() async {
-    try {
-      return await _http.getJson(AppConfig.ratesUrl);
-    } catch (_) {
-      // Do not hide malformed data from a configured custom endpoint. The
-      // mirror is only a network/server fallback for the built-in feed.
-      if (AppConfig.ratesUrl !=
-          'https://raw.githubusercontent.com/rate-json/default/main/data.json') {
-        rethrow;
-      }
+    // A custom endpoint must remain authoritative: falling back from it could
+    // silently show a different market. For the built-in provider, try three
+    // equivalent hosts because access to GitHub raw/CDN varies by ISP.
+    final builtIn = AppConfig.ratesUrl ==
+        'https://raw.githubusercontent.com/rate-json/default/main/data.json';
+    if (!builtIn) return _http.getJson(AppConfig.ratesUrl);
+
+    Object? lastError;
+    for (final url in <String>[
+      AppConfig.ratesUrl,
+      AppConfig.fallbackRatesUrl,
+      AppConfig.mirrorRatesUrl,
+    ]) {
       try {
-        return await _http.getJson(AppConfig.fallbackRatesUrl);
-      } catch (_) {
-        rethrow;
+        return await _http.getJson(url);
+      } catch (error) {
+        lastError = error;
       }
     }
+    // Preserve the original typed AppException so the controller can keep its
+    // normal offline/cached-data behaviour.
+    try {
+      return _fromTgju(await _http.getJson(AppConfig.liveFallbackRatesUrl));
+    } catch (error) {
+      lastError = error;
+    }
+    throw lastError ??
+        const AppException(AppErrorKind.server, 'All rate providers failed');
+  }
+
+  /// TGJU publishes its own board JSON in rial. Keep this adapter defensive:
+  /// the board has changed shape in the past and values may be comma-formatted.
+  Map<String, dynamic> _fromTgju(dynamic raw) {
+    if (raw is! Map) throw const FormatException('TGJU root');
+    final values = <String, dynamic>{};
+    const keys = <String, List<String>>{
+      'USD': ['price_dollar_rl', 'price_dollar', 'usd'],
+      'EUR': ['price_eur', 'price_euro', 'eur'],
+      'GBP': ['price_gbp', 'price_pound', 'gbp'],
+      'AED': ['price_aed', 'price_dirham', 'aed'],
+      'TRY': ['price_try', 'price_lira', 'try'],
+      'CNY': ['price_cny', 'price_yuan', 'cny'],
+    };
+    dynamic find(dynamic node, String key) {
+      if (node is Map) {
+        for (final entry in node.entries) {
+          if (entry.key.toString().toLowerCase() == key.toLowerCase()) {
+            final value = entry.value;
+            if (value is Map) {
+              for (final name in ['p', 'price', 'value', 'v']) {
+                if (value[name] != null) return value[name];
+              }
+            }
+            return value;
+          }
+          final result = find(entry.value, key);
+          if (result != null) return result;
+        }
+      } else if (node is List) {
+        for (final item in node) {
+          final result = find(item, key);
+          if (result != null) return result;
+        }
+      }
+      return null;
+    }
+    for (final entry in keys.entries) {
+      final value = find(raw, entry.value.firstWhere(
+        (key) => find(raw, key) != null,
+        orElse: () => '',
+      ));
+      final number = num.tryParse(value?.toString().replaceAll(',', '') ?? '');
+      if (number != null && number > 0) values[entry.key] = number / 10;
+    }
+    if (values['USD'] == null || values['EUR'] == null) {
+      throw const FormatException('TGJU required rates missing');
+    }
+    return {'values': values, 'generated_by_tomanify_at': DateTime.now().toUtc().toIso8601String()};
   }
 }
