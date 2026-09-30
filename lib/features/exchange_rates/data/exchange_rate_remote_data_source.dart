@@ -151,6 +151,9 @@ class TomanifyRemoteDataSource implements ExchangeRateRemoteDataSource {
     if (values['USD'] == null || values['EUR'] == null) {
       throw const FormatException('TGJU required rates missing');
     }
-    return {'values': values, 'generated_by_tomanify_at': DateTime.now().toUtc().toIso8601String()};
+    return {
+      'values': values,
+      'generated_by_tomanify_at': DateTime.now().toUtc().toIso8601String(),
+    };
   }
 }
