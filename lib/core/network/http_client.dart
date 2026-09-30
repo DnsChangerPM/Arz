@@ -4,19 +4,18 @@ import '../errors/app_exception.dart';
 
 class HttpClient {
   HttpClient({Dio? dio})
-    : _dio =
-          dio ??
-          Dio(
-            BaseOptions(
-              connectTimeout: const Duration(seconds: 8),
-              receiveTimeout: const Duration(seconds: 10),
-              sendTimeout: const Duration(seconds: 8),
-              headers: {
-                'Accept': 'application/json',
-                'User-Agent': 'TomanRates/1',
-              },
-            ),
-          );
+      : _dio = dio ??
+            Dio(
+              BaseOptions(
+                connectTimeout: const Duration(seconds: 8),
+                receiveTimeout: const Duration(seconds: 10),
+                sendTimeout: const Duration(seconds: 8),
+                headers: {
+                  'Accept': 'application/json',
+                  'User-Agent': 'TomanRates/1',
+                },
+              ),
+            );
   final Dio _dio;
   Future<dynamic> getJson(String url, {int attempts = 3}) async {
     Object? last;

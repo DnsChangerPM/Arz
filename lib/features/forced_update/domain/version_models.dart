@@ -35,12 +35,12 @@ class VersionConfig {
     );
   }
   Map<String, dynamic> toJson() => {
-    'current_version': current.toString(),
-    'minimum_supported_version': minimum.toString(),
-    'download_url': downloadUrl.toString(),
-    'telegram_url': telegramUrl.toString(),
-    'release_notes': releaseNotes,
-  };
+        'current_version': current.toString(),
+        'minimum_supported_version': minimum.toString(),
+        'download_url': downloadUrl.toString(),
+        'telegram_url': telegramUrl.toString(),
+        'release_notes': releaseNotes,
+      };
 }
 
 abstract interface class VersionRepository {

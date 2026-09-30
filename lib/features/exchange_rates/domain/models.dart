@@ -8,15 +8,15 @@ class CurrencyRate {
   final num toman;
   final bool isDerived;
   Map<String, dynamic> toJson() => {
-    'code': code,
-    'toman': toman,
-    'isDerived': isDerived,
-  };
+        'code': code,
+        'toman': toman,
+        'isDerived': isDerived,
+      };
   factory CurrencyRate.fromJson(Map<String, dynamic> j) => CurrencyRate(
-    code: j['code'] as String,
-    toman: j['toman'] as num,
-    isDerived: j['isDerived'] as bool? ?? false,
-  );
+        code: j['code'] as String,
+        toman: j['toman'] as num,
+        isDerived: j['isDerived'] as bool? ?? false,
+      );
 }
 
 class RateSnapshot {
@@ -34,21 +34,21 @@ class RateSnapshot {
   final String provider, rateType;
   final bool isCached;
   RateSnapshot asCached() => RateSnapshot(
-    rates: rates,
-    fetchedAt: fetchedAt,
-    sourceDate: sourceDate,
-    provider: provider,
-    rateType: rateType,
-    isCached: true,
-  );
+        rates: rates,
+        fetchedAt: fetchedAt,
+        sourceDate: sourceDate,
+        provider: provider,
+        rateType: rateType,
+        isCached: true,
+      );
   Map<String, dynamic> toJson() => {
-    'schema': 1,
-    'rates': rates.map((e) => e.toJson()).toList(),
-    'fetchedAt': fetchedAt.toUtc().toIso8601String(),
-    'sourceDate': sourceDate.toUtc().toIso8601String(),
-    'provider': provider,
-    'rateType': rateType,
-  };
+        'schema': 1,
+        'rates': rates.map((e) => e.toJson()).toList(),
+        'fetchedAt': fetchedAt.toUtc().toIso8601String(),
+        'sourceDate': sourceDate.toUtc().toIso8601String(),
+        'provider': provider,
+        'rateType': rateType,
+      };
   factory RateSnapshot.fromJson(Map<String, dynamic> j) {
     if (j['schema'] != 1) {
       throw const FormatException('Unsupported cache schema');

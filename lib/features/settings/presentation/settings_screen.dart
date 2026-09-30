@@ -14,51 +14,51 @@ class SettingsScreen extends StatelessWidget {
   final VoidCallback onBack;
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      leading: IconButton(
-        onPressed: onBack,
-        icon: const Icon(Icons.arrow_forward),
-      ),
-      title: const Text('تنظیمات'),
-    ),
-    body: ListView(
-      children: [
-        SwitchListTile(
-          title: const Text('حالت تاریک'),
-          secondary: const Icon(Icons.dark_mode_outlined),
-          value: dark,
-          onChanged: onDarkChanged,
-        ),
-        const ListTile(
-          leading: Icon(Icons.schedule),
-          title: Text('بازه بروزرسانی'),
-          subtitle: Text('${AppConfig.refreshMinutes} دقیقه'),
-        ),
-        const ListTile(
-          leading: Icon(Icons.source_outlined),
-          title: Text('منبع داده'),
-          subtitle: Text(
-            '${AppConfig.providerName} — ${AppConfig.providerType}',
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: onBack,
+            icon: const Icon(Icons.arrow_forward),
           ),
+          title: const Text('تنظیمات'),
         ),
-        ListTile(
-          leading: const Icon(Icons.info_outline),
-          title: const Text('درباره برنامه'),
-          onTap: () => showAboutDialog(
-            context: context,
-            applicationName: AppConfig.appName,
-            applicationVersion: 'در حال دریافت…',
-            children: [
-              FutureBuilder(
-                future: PackageInfo.fromPlatform(),
-                builder: (c, s) => Text(
-                  'نسخه: ${s.data?.version ?? '—'}\nمنبع: ${AppConfig.providerName}\nنرخ‌ها جنبه اطلاع‌رسانی دارند.',
-                ),
+        body: ListView(
+          children: [
+            SwitchListTile(
+              title: const Text('حالت تاریک'),
+              secondary: const Icon(Icons.dark_mode_outlined),
+              value: dark,
+              onChanged: onDarkChanged,
+            ),
+            const ListTile(
+              leading: Icon(Icons.schedule),
+              title: Text('بازه بروزرسانی'),
+              subtitle: Text('${AppConfig.refreshMinutes} دقیقه'),
+            ),
+            const ListTile(
+              leading: Icon(Icons.source_outlined),
+              title: Text('منبع داده'),
+              subtitle: Text(
+                '${AppConfig.providerName} — ${AppConfig.providerType}',
               ),
-            ],
-          ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.info_outline),
+              title: const Text('درباره برنامه'),
+              onTap: () => showAboutDialog(
+                context: context,
+                applicationName: AppConfig.appName,
+                applicationVersion: 'در حال دریافت…',
+                children: [
+                  FutureBuilder(
+                    future: PackageInfo.fromPlatform(),
+                    builder: (c, s) => Text(
+                      'نسخه: ${s.data?.version ?? '—'}\nمنبع: ${AppConfig.providerName}\nنرخ‌ها جنبه اطلاع‌رسانی دارند.',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      );
 }

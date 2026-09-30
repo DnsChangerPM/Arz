@@ -11,13 +11,14 @@ class Adapter implements HttpClientAdapter {
     RequestOptions o,
     Stream<List<int>>? s,
     Future<void>? c,
-  ) async => ResponseBody.fromString(
-    data,
-    200,
-    headers: {
-      Headers.contentTypeHeader: ['application/json'],
-    },
-  );
+  ) async =>
+      ResponseBody.fromString(
+        data,
+        200,
+        headers: {
+          Headers.contentTypeHeader: ['application/json'],
+        },
+      );
   @override
   void close({bool force = false}) {}
 }
