@@ -1,0 +1,9 @@
+plugins { id "com.android.application"; id "kotlin-android"; id "dev.flutter.flutter-gradle-plugin" }
+def keyProperties=new Properties(); def keyFile=rootProject.file('key.properties'); if(keyFile.exists()) keyProperties.load(new FileInputStream(keyFile))
+android { namespace="com.tomanrates.app"; compileSdk=flutter.compileSdkVersion
+ defaultConfig { applicationId="com.tomanrates.app"; minSdk=24; targetSdk=flutter.targetSdkVersion; versionCode=flutter.versionCode; versionName=flutter.versionName }
+ signingConfigs { release { if(keyFile.exists()){keyAlias=keyProperties['keyAlias'];keyPassword=keyProperties['keyPassword'];storeFile=file(keyProperties['storeFile']);storePassword=keyProperties['storePassword']} } }
+ buildTypes { release { signingConfig=keyFile.exists()?signingConfigs.release:signingConfigs.debug; minifyEnabled=true; shrinkResources=true; proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),'proguard-rules.pro' } }
+}
+flutter { source='../..' }
+dependencies { implementation 'androidx.work:work-runtime-ktx:2.10.0'; implementation 'com.squareup.okhttp3:okhttp:4.12.0' }
