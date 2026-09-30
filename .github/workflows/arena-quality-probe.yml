@@ -4,7 +4,6 @@ on:
     branches: ['arena/01a0f439-arz']
 permissions:
   contents: write
-  issues: write
 concurrency:
   group: arena-probe-${{ github.ref }}
   cancel-in-progress: true
@@ -16,38 +15,36 @@ jobs:
       - uses: subosito/flutter-action@v2
         with: { flutter-version: '3.35.4', channel: stable, cache: true }
       - run: flutter --version && flutter pub get
-      - name: Format (write mode) and capture diff
+      - name: Run the release pipeline quality gate verbatim
         run: |
+          set +e
           mkdir -p .ci-report
-          dart format lib test integration_test 2>&1 | tee .ci-report/format.txt
-          git diff -- lib test integration_test > .ci-report/format.diff || true
-          cat .ci-report/format.diff
-      - name: Analyze
-        run: |
-          set +e
+          dart format --output=none --set-exit-if-changed lib test integration_test \
+            > .ci-report/format.txt 2>&1
+          FMT=$?
+          if [ "$FMT" -ne 0 ]; then
+            dart format lib test integration_test >> .ci-report/format.txt 2>&1
+            git diff -- lib test integration_test > .ci-report/format.diff
+          else
+            : > .ci-report/format.diff
+          fi
           flutter analyze --fatal-infos > .ci-report/analyze.txt 2>&1
-          echo "exit=$?" >> .ci-report/analyze.txt
-          cat .ci-report/analyze.txt
-      - name: Test
-        run: |
-          set +e
+          ANA=$?
           flutter test --coverage > .ci-report/test.txt 2>&1
-          echo "exit=$?" >> .ci-report/test.txt
-          tail -60 .ci-report/test.txt
+          TST=$?
+          printf 'format=%s\nanalyze=%s\ntest=%s\n' "$FMT" "$ANA" "$TST" \
+            > .ci-report/summary.txt
+          cat .ci-report/summary.txt .ci-report/format.txt .ci-report/format.diff
+          tail -30 .ci-report/analyze.txt
+          tail -20 .ci-report/test.txt
+          echo "OVERALL=$((FMT + ANA + TST))" >> "$GITHUB_ENV"
       - name: Publish results back to the branch
+        if: always()
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A .ci-report lib test integration_test
           git commit -m 'ci: arena quality probe results [skip ci]' || echo 'no changes'
           git push origin HEAD:${{ github.ref_name }}
-      - name: Fallback - publish report as an issue
-        if: failure()
-        env: { GH_TOKEN: '${{ github.token }}' }
-        run: |
-          {
-            echo '### format.diff'; echo '```diff'; cat .ci-report/format.diff; echo '```'
-            echo '### analyze'; echo '```'; cat .ci-report/analyze.txt; echo '```'
-            echo '### test'; echo '```'; tail -80 .ci-report/test.txt; echo '```'
-          } > body.md
-          gh issue create --title "Arena quality probe ${{ github.sha }}" --body-file body.md
+      - name: Gate
+        run: test "$OVERALL" = "0"
