@@ -12,7 +12,7 @@ class TomanifyRemoteDataSource implements ExchangeRateRemoteDataSource {
   final HttpClient _http;
   @override
   Future<RateSnapshot> fetch() async {
-    final raw = await _http.getJson(AppConfig.ratesUrl);
+    final raw = await _fetchFeed();
     if (raw is! Map) {
       throw const AppException(AppErrorKind.invalidData, 'Root is not object');
     }
@@ -57,18 +57,37 @@ class TomanifyRemoteDataSource implements ExchangeRateRemoteDataSource {
         'Required currencies missing',
       );
     }
+    // Older mirrors did not include a source timestamp. The rates are still
+    // valid when the required values pass validation, so use fetch time rather
+    // than showing a false empty state.
+    final fetchedAt = DateTime.now().toUtc();
     final date = DateTime.tryParse(
       json['generated_by_tomanify_at']?.toString() ?? '',
     );
-    if (date == null) {
-      throw const AppException(AppErrorKind.invalidData, 'Invalid source date');
-    }
     return RateSnapshot(
       rates: rates,
-      fetchedAt: DateTime.now().toUtc(),
-      sourceDate: date.toUtc(),
+      fetchedAt: fetchedAt,
+      sourceDate: (date ?? fetchedAt).toUtc(),
       provider: AppConfig.providerName,
       rateType: AppConfig.providerType,
     );
+  }
+
+  Future<dynamic> _fetchFeed() async {
+    try {
+      return await _http.getJson(AppConfig.ratesUrl);
+    } catch (_) {
+      // Do not hide malformed data from a configured custom endpoint. The
+      // mirror is only a network/server fallback for the built-in feed.
+      if (AppConfig.ratesUrl !=
+          'https://raw.githubusercontent.com/rate-json/default/main/data.json') {
+        rethrow;
+      }
+      try {
+        return await _http.getJson(AppConfig.fallbackRatesUrl);
+      } catch (_) {
+        rethrow;
+      }
+    }
   }
 }

@@ -8,6 +8,13 @@ class AppConfig {
     defaultValue:
         'https://raw.githubusercontent.com/rate-json/default/main/data.json',
   );
+  // jsDelivr mirrors public GitHub files and is a useful fallback when raw
+  // GitHub is blocked or temporarily unavailable on a user's network.
+  static const fallbackRatesUrl = String.fromEnvironment(
+    'FALLBACK_RATES_URL',
+    defaultValue:
+        'https://cdn.jsdelivr.net/gh/rate-json/default@main/data.json',
+  );
   static const crossRatesUrl = String.fromEnvironment(
     'CROSS_RATES_URL',
     defaultValue: 'https://open.er-api.com/v6/latest/USD',
