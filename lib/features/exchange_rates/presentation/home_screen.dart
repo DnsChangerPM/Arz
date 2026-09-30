@@ -87,8 +87,7 @@ class HomeScreen extends StatelessWidget {
                     delegate: SliverChildBuilderDelegate(
                       (context, i) => _RateCard(
                         rate: snapshot.rates[i],
-                        name:
-                            names[snapshot.rates[i].code] ??
+                        name: names[snapshot.rates[i].code] ??
                             snapshot.rates[i].code,
                         symbol: symbols[snapshot.rates[i].code] ?? '',
                       ),
@@ -110,26 +109,26 @@ class HomeScreen extends StatelessWidget {
   }
 
   static Widget _skeleton(BuildContext c, int i) => Card(
-    child: Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 100,
-            height: 20,
-            color: Theme.of(c).colorScheme.surfaceContainerHighest,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 100,
+                height: 20,
+                color: Theme.of(c).colorScheme.surfaceContainerHighest,
+              ),
+              const Spacer(),
+              Container(
+                width: 220,
+                height: 34,
+                color: Theme.of(c).colorScheme.surfaceContainerHighest,
+              ),
+            ],
           ),
-          const Spacer(),
-          Container(
-            width: 220,
-            height: 34,
-            color: Theme.of(c).colorScheme.surfaceContainerHighest,
-          ),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 }
 
 class _Status extends StatelessWidget {
@@ -139,8 +138,7 @@ class _Status extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cached = snapshot?.isCached ?? false;
-    final stale =
-        snapshot != null &&
+    final stale = snapshot != null &&
         DateTime.now().difference(snapshot!.fetchedAt).inHours >=
             AppConfig.staleHours;
     return Padding(
@@ -189,51 +187,57 @@ class _RateCard extends StatelessWidget {
   final String name, symbol;
   @override
   Widget build(BuildContext context) => Semantics(
-    label: '$name، یک $rate برابر ${RateFormatter.toman(rate.toman)}',
-    child: Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+        label: '$name، یک $rate برابر ${RateFormatter.toman(rate.toman)}',
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(child: Text(symbol)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        rate.code,
-                        textDirection: TextDirection.ltr,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                Row(
+                  children: [
+                    CircleAvatar(child: Text(symbol)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            rate.code,
+                            textDirection: TextDirection.ltr,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                          Text(name),
+                        ],
                       ),
-                      Text(name),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+                const Spacer(),
+                Text(
+                  RateFormatter.toman(rate.toman),
+                  style: Theme.of(
+                    context,
+                  )
+                      .textTheme
+                      .headlineSmall
+                      ?.copyWith(fontWeight: FontWeight.w700),
+                ),
+                if (rate.isDerived)
+                  const Text(
+                    'محاسبه‌شده با نرخ متقاطع دلار',
+                    style: TextStyle(fontSize: 11),
+                  ),
               ],
             ),
-            const Spacer(),
-            Text(
-              RateFormatter.toman(rate.toman),
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            if (rate.isDerived)
-              const Text(
-                'محاسبه‌شده با نرخ متقاطع دلار',
-                style: TextStyle(fontSize: 11),
-              ),
-          ],
+          ),
         ),
-      ),
-    ),
-  );
+      );
 }
 
 class _Empty extends StatelessWidget {
@@ -241,22 +245,22 @@ class _Empty extends StatelessWidget {
   final Future<void> Function() refresh;
   @override
   Widget build(BuildContext context) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.cloud_off, size: 64),
-          const SizedBox(height: 16),
-          const Text('نرخ معتبری ذخیره نشده است.'),
-          const SizedBox(height: 12),
-          FilledButton.icon(
-            onPressed: refresh,
-            icon: const Icon(Icons.refresh),
-            label: const Text('تلاش دوباره'),
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.cloud_off, size: 64),
+              const SizedBox(height: 16),
+              const Text('نرخ معتبری ذخیره نشده است.'),
+              const SizedBox(height: 12),
+              FilledButton.icon(
+                onPressed: refresh,
+                icon: const Icon(Icons.refresh),
+                label: const Text('تلاش دوباره'),
+              ),
+            ],
           ),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 }

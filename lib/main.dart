@@ -71,16 +71,15 @@ class _AppState extends State<TomanRatesApp> with TrayListener {
     super.initState();
     dark = widget.store.readBool('dark_mode') ?? false;
     final http = network.HttpClient();
-    controller =
-        RatesController(
-            ExchangeRateRepositoryImpl(
-              TomanifyRemoteDataSource(http),
-              widget.store,
-              WidgetBridge(),
-            ),
-          )
-          ..addListener((_) => mounted ? setState(() {}) : null)
-          ..start(interval: const Duration(minutes: AppConfig.refreshMinutes));
+    controller = RatesController(
+      ExchangeRateRepositoryImpl(
+        TomanifyRemoteDataSource(http),
+        widget.store,
+        WidgetBridge(),
+      ),
+    )
+      ..addListener((_) => mounted ? setState(() {}) : null)
+      ..start(interval: const Duration(minutes: AppConfig.refreshMinutes));
     WidgetBridge().schedule();
     _checkVersion(VersionRepositoryImpl(http, widget.store));
     if (Platform.isWindows) _setupTray();
@@ -137,8 +136,7 @@ class _AppState extends State<TomanRatesApp> with TrayListener {
 
   @override
   Widget build(BuildContext context) {
-    final blocked =
-        version != null &&
+    final blocked = version != null &&
         SemanticVersion.parse(installed).compareTo(version!.minimum) < 0;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -153,21 +151,21 @@ class _AppState extends State<TomanRatesApp> with TrayListener {
       home: checking && controller.current.snapshot == null
           ? const Scaffold(body: Center(child: CircularProgressIndicator()))
           : blocked
-          ? ForcedUpdateScreen(config: version!, installed: installed)
-          : page == 0
-          ? HomeScreen(
-              state: controller.current,
-              refresh: controller.refresh,
-              openSettings: () => setState(() => page = 1),
-            )
-          : SettingsScreen(
-              dark: dark,
-              onBack: () => setState(() => page = 0),
-              onDarkChanged: (v) {
-                setState(() => dark = v);
-                widget.store.writeBool('dark_mode', v);
-              },
-            ),
+              ? ForcedUpdateScreen(config: version!, installed: installed)
+              : page == 0
+                  ? HomeScreen(
+                      state: controller.current,
+                      refresh: controller.refresh,
+                      openSettings: () => setState(() => page = 1),
+                    )
+                  : SettingsScreen(
+                      dark: dark,
+                      onBack: () => setState(() => page = 0),
+                      onDarkChanged: (v) {
+                        setState(() => dark = v);
+                        widget.store.writeBool('dark_mode', v);
+                      },
+                    ),
     );
   }
 }

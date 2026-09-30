@@ -12,11 +12,12 @@ class RatesState {
     bool? loading,
     String? error,
     bool clearError = false,
-  }) => RatesState(
-    snapshot: snapshot ?? this.snapshot,
-    loading: loading ?? this.loading,
-    error: clearError ? null : error ?? this.error,
-  );
+  }) =>
+      RatesState(
+        snapshot: snapshot ?? this.snapshot,
+        loading: loading ?? this.loading,
+        error: clearError ? null : error ?? this.error,
+      );
 }
 
 class RatesController extends StateNotifier<RatesState> {
