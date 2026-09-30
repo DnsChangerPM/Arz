@@ -11,4 +11,3 @@
 ✅ /home/runner/work/Arz/Arz/test/core/semver_test.dart: invalid versions rejected
 
 🎉 10 tests passed.
-exit=0

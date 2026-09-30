@@ -1,6 +1,2 @@
 Analyzing Arz...                                                
-
-warning • The left operand can't be null, so the right operand is never executed • lib/features/exchange_rates/data/exchange_rate_remote_data_source.dart:104:9 • dead_null_aware_expression
-
-1 issue found. (ran in 13.6s)
-exit=1
+No issues found! (ran in 13.3s)

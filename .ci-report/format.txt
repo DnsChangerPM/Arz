@@ -1,2 +1,1 @@
-Formatted lib/features/exchange_rates/data/exchange_rate_remote_data_source.dart
-Formatted 24 files (1 changed) in 0.53 seconds.
+Formatted 24 files (0 changed) in 0.58 seconds.
