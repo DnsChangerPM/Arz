@@ -74,20 +74,28 @@ class TomanifyRemoteDataSource implements ExchangeRateRemoteDataSource {
   }
 
   Future<dynamic> _fetchFeed() async {
-    try {
-      return await _http.getJson(AppConfig.ratesUrl);
-    } catch (_) {
-      // Do not hide malformed data from a configured custom endpoint. The
-      // mirror is only a network/server fallback for the built-in feed.
-      if (AppConfig.ratesUrl !=
-          'https://raw.githubusercontent.com/rate-json/default/main/data.json') {
-        rethrow;
-      }
+    // A custom endpoint must remain authoritative: falling back from it could
+    // silently show a different market. For the built-in provider, try three
+    // equivalent hosts because access to GitHub raw/CDN varies by ISP.
+    final builtIn = AppConfig.ratesUrl ==
+        'https://raw.githubusercontent.com/rate-json/default/main/data.json';
+    if (!builtIn) return _http.getJson(AppConfig.ratesUrl);
+
+    Object? lastError;
+    for (final url in <String>[
+      AppConfig.ratesUrl,
+      AppConfig.fallbackRatesUrl,
+      AppConfig.mirrorRatesUrl,
+    ]) {
       try {
-        return await _http.getJson(AppConfig.fallbackRatesUrl);
-      } catch (_) {
-        rethrow;
+        return await _http.getJson(url);
+      } catch (error) {
+        lastError = error;
       }
     }
+    // Preserve the original typed AppException so the controller can keep its
+    // normal offline/cached-data behaviour.
+    throw lastError ??
+        const AppException(AppErrorKind.server, 'All rate providers failed');
   }
 }

@@ -13,6 +13,13 @@ class AppConfig {
   static const fallbackRatesUrl = String.fromEnvironment(
     'FALLBACK_RATES_URL',
     defaultValue:
+        'https://github.com/rate-json/default/raw/refs/heads/main/data.json',
+  );
+  // A second CDN is kept as a last-resort fallback. Some Iranian networks
+  // intermittently block raw.githubusercontent.com while GitHub itself works.
+  static const mirrorRatesUrl = String.fromEnvironment(
+    'MIRROR_RATES_URL',
+    defaultValue:
         'https://cdn.jsdelivr.net/gh/rate-json/default@main/data.json',
   );
   static const crossRatesUrl = String.fromEnvironment(
