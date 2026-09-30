@@ -93,12 +93,29 @@ jobs:
         with: { name: android-release, path: 'TomanRates-*' }
   windows:
     needs: [version, quality]
-    runs-on: windows-latest
+    # Pinned on purpose: windows-latest/windows-2025 ship Visual Studio 2026 (v18),
+    # which Flutter 3.35.x cannot detect. It then falls back to the
+    # "Visual Studio 16 2019" CMake generator and the build dies with
+    # "could not find any instance of Visual Studio". windows-2022 has VS 2022 (v17).
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with: { flutter-version: '3.35.4', channel: stable, cache: true }
+      - name: Verify Visual Studio C++ toolchain
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          if (!(Test-Path $vswhere)) { throw 'vswhere.exe not found: no Visual Studio installation on this runner.' }
+          $installs = & $vswhere -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -format json | ConvertFrom-Json
+          if (!$installs) { throw 'No Visual Studio install with the C++ desktop toolchain (VC.Tools.x86.x64) was found.' }
+          $installs | ForEach-Object { "Found $($_.displayName) $($_.installationVersion)" }
+          $major = [int]($installs[0].installationVersion.Split('.')[0])
+          if ($major -ne 17) {
+            throw "Flutter 3.35.4 only supports Visual Studio 2022 (v17); this runner has v$major. Pin runs-on to an image with VS 2022 or upgrade Flutter."
+          }
       - run: flutter config --enable-windows-desktop; flutter pub get
+      - run: flutter doctor -v
       - run: flutter build windows --release --build-name '${{ needs.version.outputs.version }}' --build-number '${{ needs.version.outputs.code }}'
       - name: Build installer
         shell: pwsh
