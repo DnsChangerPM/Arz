@@ -22,6 +22,12 @@ class AppConfig {
     defaultValue:
         'https://cdn.jsdelivr.net/gh/rate-json/default@main/data.json',
   );
+  // TGJU's public data endpoint is a useful live fallback. It returns rial
+  // values, so the adapter converts them to toman exactly once.
+  static const liveFallbackRatesUrl = String.fromEnvironment(
+    'LIVE_FALLBACK_RATES_URL',
+    defaultValue: 'https://call1.tgju.org/ajax.json',
+  );
   static const crossRatesUrl = String.fromEnvironment(
     'CROSS_RATES_URL',
     defaultValue: 'https://open.er-api.com/v6/latest/USD',
