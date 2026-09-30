@@ -1,0 +1,23 @@
+diff --git a/lib/features/exchange_rates/data/exchange_rate_remote_data_source.dart b/lib/features/exchange_rates/data/exchange_rate_remote_data_source.dart
+index 2685d97..7596c72 100644
+--- a/lib/features/exchange_rates/data/exchange_rate_remote_data_source.dart
++++ b/lib/features/exchange_rates/data/exchange_rate_remote_data_source.dart
+@@ -140,11 +140,14 @@ class TomanifyRemoteDataSource implements ExchangeRateRemoteDataSource {
+       }
+       return null;
+     }
++
+     for (final entry in keys.entries) {
+-      final value = find(raw, entry.value.firstWhere(
+-        (key) => find(raw, key) != null,
+-        orElse: () => '',
+-      ));
++      final value = find(
++          raw,
++          entry.value.firstWhere(
++            (key) => find(raw, key) != null,
++            orElse: () => '',
++          ));
+       final number = num.tryParse(value?.toString().replaceAll(',', '') ?? '');
+       if (number != null && number > 0) values[entry.key] = number / 10;
+     }

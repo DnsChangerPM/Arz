@@ -140,11 +140,14 @@ class TomanifyRemoteDataSource implements ExchangeRateRemoteDataSource {
       }
       return null;
     }
+
     for (final entry in keys.entries) {
-      final value = find(raw, entry.value.firstWhere(
-        (key) => find(raw, key) != null,
-        orElse: () => '',
-      ));
+      final value = find(
+          raw,
+          entry.value.firstWhere(
+            (key) => find(raw, key) != null,
+            orElse: () => '',
+          ));
       final number = num.tryParse(value?.toString().replaceAll(',', '') ?? '');
       if (number != null && number > 0) values[entry.key] = number / 10;
     }
