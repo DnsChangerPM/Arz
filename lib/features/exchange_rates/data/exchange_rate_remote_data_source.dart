@@ -81,7 +81,12 @@ class TomanifyRemoteDataSource implements ExchangeRateRemoteDataSource {
         'https://raw.githubusercontent.com/rate-json/default/main/data.json';
     if (!builtIn) return _http.getJson(AppConfig.ratesUrl);
 
-    Object? lastError;
+    // Seeded so the throw below always has a typed error to report, even if the
+    // candidate list is ever emptied; each failed attempt overwrites it.
+    Object lastError = const AppException(
+      AppErrorKind.server,
+      'All rate providers failed',
+    );
     for (final url in <String>[
       AppConfig.ratesUrl,
       AppConfig.fallbackRatesUrl,
@@ -100,8 +105,7 @@ class TomanifyRemoteDataSource implements ExchangeRateRemoteDataSource {
     } catch (error) {
       lastError = error;
     }
-    throw lastError ??
-        const AppException(AppErrorKind.server, 'All rate providers failed');
+    throw lastError;
   }
 
   /// TGJU publishes its own board JSON in rial. Keep this adapter defensive:
@@ -140,11 +144,14 @@ class TomanifyRemoteDataSource implements ExchangeRateRemoteDataSource {
       }
       return null;
     }
+
     for (final entry in keys.entries) {
-      final value = find(raw, entry.value.firstWhere(
-        (key) => find(raw, key) != null,
-        orElse: () => '',
-      ));
+      final value = find(
+          raw,
+          entry.value.firstWhere(
+            (key) => find(raw, key) != null,
+            orElse: () => '',
+          ));
       final number = num.tryParse(value?.toString().replaceAll(',', '') ?? '');
       if (number != null && number > 0) values[entry.key] = number / 10;
     }
