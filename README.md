@@ -88,7 +88,7 @@ flutter build windows --release --build-name 1.2.0 --build-number 1002000
 iscc /DAppVersion=1.2.0 installer/toman_rates.iss
 ```
 
-Android local release signing uses untracked `android/key.properties`. CI requires the four Android signing secrets listed in [docs/release.md](docs/release.md). Run `.github/workflows/build-release.yml` with `APP_VERSION`; it validates, tests, signs/builds, packages, checks artifacts, tags and publishes `TomanRates-X.Y.Z-Android.apk` and `TomanRates-X.Y.Z-Windows.exe` with SHA-256 files.
+Android local release signing uses untracked `android/key.properties`. CI uses the four Android signing secrets listed in [docs/release.md](docs/release.md); when they are absent it warns and falls back to the Android debug key instead of failing. Run `.github/workflows/build-release.yml` with `APP_VERSION`; it validates, tests, signs/builds, packages, checks artifacts, tags and publishes `TomanRates-X.Y.Z-Android.apk` and `TomanRates-X.Y.Z-Windows.exe` with SHA-256 files.
 
 ## Known limitations
 
